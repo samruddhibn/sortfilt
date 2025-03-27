@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Form and Sortable Table</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            padding: 20px;
+        }
+        table {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Registration Form</h2>
+    <form id="registrationForm">
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" class="form-control" id="name" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" class="form-control" id="email" required>
+        </div>
+        <div class="form-group">
+            <label for="age">Age:</label>
+            <input type="number" class="form-control" id="age" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Register</button>
+    </form>
+
+    <h2 class="mt-5">Registered Users</h2>
+    <div class="form-group">
+        <label for="filter">Filter by Name:</label>
+        <input type="text" id="filter" class="form-control" placeholder="Type to filter...">
+    </div>
+    <table class="table table-bordered" id="userTable">
+        <thead>
+            <tr>
+                <th onclick="sortTable(0)">Name</th>
+                <th onclick="sortTable(1)">Email</th>
+                <th onclick="sortTable(2)">Age</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- User data will be inserted here -->
+        </tbody>
+    </table>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    const registrationForm = document.getElementById('registrationForm');
+    const userTableBody = document.querySelector('#userTable tbody');
+    const filterInput = document.getElementById('filter');
+
+    registrationForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const age = document.getElementById('age').value;
+
+        const newRow = userTableBody.insertRow();
+        newRow.insertCell(0).innerText = name;
+        newRow.insertCell(1).innerText = email;
+        newRow.insertCell(2).innerText = age;
+
+        registrationForm.reset();
+    });
+
+    filterInput.addEventListener('input', function() {
+        const filterValue = filterInput.value.toLowerCase();
+        const rows = userTableBody.getElementsByTagName('tr');
+
+        for (let i = 0; i < rows.length; i++) {
+            const cells = rows[i].getElementsByTagName('td');
+            const nameCell = cells[0].innerText.toLowerCase();
+            if (nameCell.includes(filterValue)) {
+                rows[i].style.display = '';
+            } else {
+                rows[i].style.display = 'none';
+            }
+        }
+    });
+
+    function sortTable(columnIndex) {
+        const rows = Array.from(userTableBody.rows);
+        const isAscending = userTableBody.dataset.sortOrder === 'asc';
+        userTableBody.dataset.sortOrder = isAscending ? 'desc' : 'asc';
+
+        rows.sort((a, b) => {
+            const aText = a.cells[columnIndex].innerText;
+            const bText = b.cells[columnIndex].innerText;
+
+            return isAscending ? aText.localeCompare(bText) : bText.localeCompare(aText);
+        });
+
+        userTableBody.innerHTML = '';
+        rows.forEach(row => userTableBody.appendChild(row));
+    }
+</script>
+</body>
+</html>
